@@ -1,0 +1,12 @@
+Metadata-Version: 2.4
+Name: epic-creator
+Version: 0.0.1
+Summary: AI-driven JIRA Epic creation
+Author-email: Abhinav Singh Chauhan <sabhinavofficial@gmail.com>
+Requires-Python: >=3.10
+Requires-Dist: requests>=2.32
+Requires-Dist: tenacity<9.0.0,>=8.1.0
+Requires-Dist: langchain-openai>=0.1.0
+Requires-Dist: pydantic>=2.6
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: dotenv
