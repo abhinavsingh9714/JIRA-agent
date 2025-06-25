@@ -42,6 +42,7 @@ def create_epic_from_prompt(project_key: str, manager_prompt: str) -> str:
     print(mapped_fields)
     # epic_key = handler.create_epic(project_key, mapped_fields)
     # return epic_key
+    return mapped_fields
 
 if __name__ == "__main__":
     # Example usage
