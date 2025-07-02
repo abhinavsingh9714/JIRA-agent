@@ -2,34 +2,19 @@
 # 1. Field Metadata Retrieval Service                                         #
 ###############################################################################
 from typing import Any, Dict, List
-from ..jiraClient import JiraClient
+from .jiraClient import JiraClient
 class FieldMetadataService:
     def __init__(self, jira_client: JiraClient):
         self.jira_client = jira_client
 
+    def _canonical(self, name: str) -> str:
+        """Normalize field names for consistent mapping."""
+        return name.strip().lower().replace(" ", "_")
+
     def _index_by_id(self, fields: List[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
         return {f["id"]: f for f in fields}
 
-    def _process_field_metadata(self, all_fields: List[Dict[str, Any]], project_fields: List[Dict[str, Any]] | Dict[str, Any]) -> Dict[str, Any]:
-        """Return mapping field_name → {id, required, allowedValues?} for EPIC creation."""
-        id_index = self._index_by_id(all_fields)
-        epic_fields: Dict[str, Any] = {}
-        # ``project_fields`` structure: list[{'id':issuetypeId,'fields':{fieldId:{required,..}}}] ; keep first (EPIC) entry
-        for issuetype in project_fields:
-            # print(issuetype)
-            if issuetype.get("name", "").lower() == "epic":
-                for fid, meta in issuetype["fields"].items():
-                    full = id_index.get(fid, {})
-                    epic_fields[full.get("name", fid)] = {
-                        "id": fid,
-                        "required": meta.get("required", False),
-                        "schema": full.get("schema", {}),
-                        "allowed": meta.get("allowedValues", full.get("allowedValues"))
-                    }
-                break
-        return epic_fields
-
-    def _process_field_metadata1(
+    def _process_field_metadata(
         self,
         all_fields: List[Dict[str, Any]],
         project_fields: List[Dict[str, Any]] | Dict[str, Any],
@@ -98,7 +83,7 @@ class FieldMetadataService:
         # global field catalogue for nice names / schemas
         all_fields = self.jira_client.get("/rest/api/3/field")
 
-        return self._process_field_metadata1(all_fields, [epic_meta])
+        return self._process_field_metadata(all_fields, [epic_meta])
     
     def get_user_id(self):
         # discover Epic issueTypeId
@@ -107,3 +92,43 @@ class FieldMetadataService:
         )["accountId"]
 
         return accountId
+    
+    # ---------- New helpers for Story & Task -------------------- #
+    def get_story_fields(self, project_key: str) -> Dict[str, Any]:
+        return self._fields_for_type(project_key, "Story")
+
+    def get_task_fields(self, project_key: str) -> Dict[str, Any]:
+        # First try Jira Cloud sub-task, fall back to plain Task
+        try:
+            return self._fields_for_type(project_key, "Sub-task")
+        except StopIteration:
+            return self._fields_for_type(project_key, "Task")
+
+    # Re-use an internal generic helper
+    def _fields_for_type(self, project_key: str, issue_type_name: str) -> Dict[str, Any]:
+        types = self.jira_client.get(f"/rest/api/3/issue/createmeta/{project_key}/issuetypes")["issueTypes"]
+        type_id = next(t["id"] for t in types if t["name"].lower() == issue_type_name.lower())
+        meta = self.jira_client.get(f"/rest/api/3/issue/createmeta/{project_key}/issuetypes/{type_id}")
+        all_fields = self.jira_client.get("/rest/api/3/field")
+        return self._process_field_metadata(all_fields, [meta])
+    
+    def get_allowed_field_map(self, project_key: str, issue_type: str) -> dict[str, dict]:
+        """
+        Returns {canonical_field_name: meta_dict}
+        meta_dict = {"id": "customfield_10011", "required": bool, ...}
+        """
+        cache_attr = f"_cache_{project_key}_{issue_type.lower()}"
+        if hasattr(self, cache_attr):
+            return getattr(self, cache_attr)
+
+        if issue_type.lower() == "epic":
+            field_map = self.get_epic_fields(project_key)
+        elif issue_type.lower() == "story":
+            field_map = self.get_story_fields(project_key)
+        else:  # Task / Sub-task
+            field_map = self.get_task_fields(project_key)
+
+        # Canonicalise keys once for fast look-ups later
+        canon_map = {self._canonical(k): v for k, v in field_map.items()}
+        setattr(self, cache_attr, canon_map)
+        return canon_map

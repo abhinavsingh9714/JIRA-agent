@@ -11,7 +11,6 @@ from pydantic import BaseModel, Field
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 from pathlib import Path
-print(Path(__file__).resolve().parents[2] / ".env")
 from dotenv import load_dotenv; load_dotenv(dotenv_path=Path(__file__).resolve().parents[2] / ".env")
 
 class JiraError(RuntimeError):
@@ -38,7 +37,6 @@ class JiraClient:
         response = self.session.get(url, params=params)
         if not response.ok:
             raise JiraError(f"GET {url} → {response.status_code}: {response.text}")
-        # return json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": "))
         return response.json()
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=1, max=10),

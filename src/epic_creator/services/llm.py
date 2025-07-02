@@ -1,71 +1,89 @@
-###############################################################################
-# 3. Prompt Engineering & LLM Service                                         #
-###############################################################################
+"""
+Epic‑Creator • planning.llm
+---------------------------------
+Generate a structured *Plan* object (Initiatives ▸ Epics ▸ Stories ▸ Tasks)
+from a free‑form feature prompt and an optional Style Guide / Fields Guide.
+
+Key differences vs. the previous version:
+1.  Uses **ChatOpenAI.with_structured_output(Plan)** — the Plan JSON schema is
+    sent as a function‑call tool outside the prompt, so **zero schema tokens**
+    hit the context window.
+2.  No explicit JsonOutputParser / OutputFixingParser boilerplate — parsing &
+    validation are handled automatically by LangChain.
+3.  Keeps the prompt concise and focused on high‑value context only.
+"""
+from __future__ import annotations
+
+from typing import Optional
+
 from langchain_openai import ChatOpenAI
-from langchain_core.output_parsers import JsonOutputParser
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from pydantic import BaseModel, Field
-from typing import List, Dict, Any
+from langchain_core.prompts import ChatPromptTemplate
 
+from epic_creator.planning.models import Plan
 
-class EpicOutput(BaseModel):
-    summary: str = Field(description="Epic summary/title")
-    description: str = Field(description="Detailed epic description")
-    priority: str = Field(description="Epic priority level, e.g. High/Medium/Low")
-    labels: List[str] = Field(description="List of labels")
+# ──────────────────────────────────────────────────────────────────────────────
+# 1.  LLM wrapper
+# ──────────────────────────────────────────────────────────────────────────────
+class PlanningLLMService:
+    """Plan generation helper — single public method:
 
+    ```python
+    create_plan(project_key: str, user_prompt: str,
+                style_guide: str | None = None,
+                fields_guide: str | None = None) -> Plan
+    ```
+    """
 
-parser = JsonOutputParser(pydantic_object=EpicOutput)
-
-
-class LLMService:
-    """Generates structured Epic JSON using contextual prompt."""
     SYSTEM_PROMPT = (
-        "You are a senior project manager creating well-structured JIRA Epics. "
-        "Return *only* JSON that matches the schema."
+        "You are a senior agile project planner.\n"
+        "Generate a product backlog *JSON* that conforms to the provided Plan\n"
+        "schema (initiatives → epics → stories → tasks).\n"
+        "Include **every** required field such as summary, description,\n"
+        "priority, acceptance_criteria, parent_* links, etc.\n"
+        "Return *only* JSON; no prose."
     )
 
-    def __init__(self, model_name: str = "gpt-4o-mini", temperature: float = 0.3):
-        self.llm = ChatOpenAI(model_name=model_name, temperature=temperature)
+    def __init__(
+        self,
+        model_name: str = "gpt-4o-mini",
+        temperature: float = 0.2,
+    ) -> None:
+        # Base LLM
+        base_llm = ChatOpenAI(model_name=model_name, temperature=temperature)
+        # Wrap with structured‑output: ensures any .invoke() returns Plan
+        self.structured_llm = base_llm.with_structured_output(Plan)
 
-        # Build a reusable chained runnable:  Prompt -> Model -> JSON-Parser
+        # Prompt chain: template → structured LLM → Plan object
         self.chain = (
             ChatPromptTemplate.from_messages(
                 [
                     ("system", self.SYSTEM_PROMPT),
-                    # user content is injected later via input variable {prompt}
-                    ("user", "{prompt}"),
+                    ("user", "{full_prompt}"),
                 ]
             )
-            | self.llm
-            | parser            # automatically parses .content into EpicOutput
+            | self.structured_llm
         )
 
     # --------------------------------------------------------------------- #
-    # Prompt text helper                                                    #
+    # Public API
     # --------------------------------------------------------------------- #
-    def build_prompt(
+    def create_plan(
         self,
-        field_requirements: Dict[str, Any],
-        project_info: Dict[str, str],
-        examples: List[Dict[str, Any]],
-        user_requirements: str,
-    ) -> str:
-        examples_fmt = "\n".join(f"- {e['fields']}" for e in examples) or "(none)"
-        field_fmt = "\n".join(
-            f"* {n} (required={m['required']})" for n, m in field_requirements.items()
-        )
-        return (
-            f"Project: {project_info['name']}\n"
-            f"Description: {project_info['description']}\n\n"
-            f"Field requirements:\n{field_fmt}\n\n"
-            f"Recent epic examples:\n{examples_fmt}\n\n"
-            f"New epic requirement: {user_requirements}\n\n"
-            f"Return a JSON object with keys in Field requirements"
-        )
+        project_key: str,
+        user_prompt: str,
+        style_guide: Optional[str] = None,
+        fields_guide: Optional[str] = None,
+    ) -> Plan:
+        """Generate and validate a **Plan** for the given feature request."""
 
-    # --------------------------------------------------------------------- #
-    # Single entry-point the rest of your code calls                         #
-    # --------------------------------------------------------------------- #
-    def generate_epic(self, prompt: str) -> EpicOutput:
-        return self.chain.invoke({"prompt": prompt})  # returns EpicOutput
+        # — Build the user prompt context —
+        full_prompt = (
+            f"=== PROJECT KEY ===\n{project_key}\n\n"
+            f"=== FEATURE PROMPT ===\n{user_prompt}\n\n"
+            f"=== STYLE GUIDE ===\n{style_guide or 'No prior style guide available.'}\n\n"
+            f"=== FIELDS GUIDE ===\n{fields_guide or 'No field constraints provided.'}"
+        )
+        print(full_prompt)
+        # Invoke chain → returns validated Plan instance
+        plan: Plan = self.chain.invoke({"full_prompt": full_prompt})
+        return plan

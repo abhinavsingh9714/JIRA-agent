@@ -69,7 +69,7 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 # 2️⃣  Import your package
-from epic_creator.jiraClient          import JiraClient
+from epic_creator.services.jiraClient          import JiraClient
 from epic_creator.services.field_meta import FieldMetadataService
 from epic_creator.services.context    import FeatureContextService
 from epic_creator.services.llm        import LLMService

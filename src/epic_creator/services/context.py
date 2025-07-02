@@ -2,7 +2,7 @@
 # 2. Feature Context Retrieval Service                                        #
 ###############################################################################
 from typing import Any, Dict, List
-from ..jiraClient import JiraClient
+from .jiraClient import JiraClient
 
 class FeatureContextService:
     """Fetches organisational context (project summary, recent epics)."""

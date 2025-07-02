@@ -1,0 +1,235 @@
+{
+  "project_key": "DEMO",
+  "initiatives": [
+    {
+      "local_id": "INIT-1",
+      "summary": "Create a resume builder app",
+      "description": "Develop an application that allows users to create professional resumes from their input.",
+      "epics": [
+        {
+          "local_id": "EPIC-1",
+          "summary": "Build the core resume generation feature",
+          "description": "Implement functionality to generate resumes based on user input.",
+          "priority": "High",
+          "stories": [
+            {
+              "local_id": "STORY-1",
+              "summary": "Collect user personal information",
+              "description": "Create forms to collect user's personal information for the resume.",
+              "story_points": 3,
+              "priority": "High",
+              "acceptance_criteria": [
+                "User can input name, contact information, and address.",
+                "Input fields are validated for correctness."
+              ],
+              "tasks": [
+                {
+                  "local_id": "TASK-1",
+                  "summary": "Design personal information form",
+                  "description": "Create UI for personal information input.",
+                  "priority": "High",
+                  "parent_story": "STORY-1"
+                },
+                {
+                  "local_id": "TASK-2",
+                  "summary": "Implement form validation",
+                  "description": "Add validation rules for personal information fields.",
+                  "priority": "Medium",
+                  "parent_story": "STORY-1"
+                }
+              ],
+              "parent_epic": "EPIC-1"
+            },
+            {
+              "local_id": "STORY-2",
+              "summary": "Gather work experience details",
+              "description": "Develop input fields for users to enter their work experience.",
+              "story_points": 5,
+              "priority": "High",
+              "acceptance_criteria": [
+                "User can input multiple work experiences.",
+                "Each experience includes job title, company, and duration."
+              ],
+              "tasks": [
+                {
+                  "local_id": "TASK-3",
+                  "summary": "Create work experience input fields",
+                  "description": "Design UI for entering work experience.",
+                  "priority": "High",
+                  "parent_story": "STORY-2"
+                },
+                {
+                  "local_id": "TASK-4",
+                  "summary": "Implement experience data storage",
+                  "description": "Store user input for work experience in the database.",
+                  "priority": "Medium",
+                  "parent_story": "STORY-2"
+                }
+              ],
+              "parent_epic": "EPIC-1"
+            },
+            {
+              "local_id": "STORY-3",
+              "summary": "Input education background",
+              "description": "Allow users to enter their educational qualifications.",
+              "story_points": 4,
+              "priority": "Medium",
+              "acceptance_criteria": [
+                "User can input multiple educational qualifications.",
+                "Each qualification includes degree, institution, and year."
+              ],
+              "tasks": [
+                {
+                  "local_id": "TASK-5",
+                  "summary": "Design education input form",
+                  "description": "Create UI for educational background input.",
+                  "priority": "Medium",
+                  "parent_story": "STORY-3"
+                },
+                {
+                  "local_id": "TASK-6",
+                  "summary": "Store education data",
+                  "description": "Implement storage for educational qualifications.",
+                  "priority": "Low",
+                  "parent_story": "STORY-3"
+                }
+              ],
+              "parent_epic": "EPIC-1"
+            },
+            {
+              "local_id": "STORY-4",
+              "summary": "Collect user skills",
+              "description": "Create input for users to list their skills.",
+              "story_points": 2,
+              "priority": "Medium",
+              "acceptance_criteria": [
+                "User can input multiple skills.",
+                "Skills can be tagged for better organization."
+              ],
+              "tasks": [
+                {
+                  "local_id": "TASK-7",
+                  "summary": "Design skills input interface",
+                  "description": "Create UI for skills input.",
+                  "priority": "Medium",
+                  "parent_story": "STORY-4"
+                },
+                {
+                  "local_id": "TASK-8",
+                  "summary": "Implement skills storage",
+                  "description": "Store user skills in the database.",
+                  "priority": "Low",
+                  "parent_story": "STORY-4"
+                }
+              ],
+              "parent_epic": "EPIC-1"
+            }
+          ],
+          "parent_initiative": "INIT-1"
+        },
+        {
+          "local_id": "EPIC-2",
+          "summary": "Add PDF generation and download feature",
+          "description": "Implement functionality to generate and download resumes in PDF format.",
+          "priority": "High",
+          "stories": [
+            {
+              "local_id": "STORY-5",
+              "summary": "Generate resume in PDF format",
+              "description": "Create a feature to convert user input into a PDF resume.",
+              "story_points": 5,
+              "priority": "High",
+              "acceptance_criteria": [
+                "Resume is generated in PDF format.",
+                "PDF is formatted correctly and includes all user input."
+              ],
+              "tasks": [
+                {
+                  "local_id": "TASK-9",
+                  "summary": "Implement PDF generation logic",
+                  "description": "Write code to convert user data into a PDF format.",
+                  "priority": "High",
+                  "parent_story": "STORY-5"
+                },
+                {
+                  "local_id": "TASK-10",
+                  "summary": "Test PDF output",
+                  "description": "Ensure the generated PDF meets quality standards.",
+                  "priority": "Medium",
+                  "parent_story": "STORY-5"
+                }
+              ],
+              "parent_epic": "EPIC-2"
+            },
+            {
+              "local_id": "STORY-6",
+              "summary": "Allow users to download resumes",
+              "description": "Implement a feature for users to download their generated resumes.",
+              "story_points": 3,
+              "priority": "High",
+              "acceptance_criteria": [
+                "Users can download the generated PDF.",
+                "Download link is easily accessible."
+              ],
+              "tasks": [
+                {
+                  "local_id": "TASK-11",
+                  "summary": "Create download button",
+                  "description": "Design and implement a download button for the PDF.",
+                  "priority": "High",
+                  "parent_story": "STORY-6"
+                },
+                {
+                  "local_id": "TASK-12",
+                  "summary": "Test download functionality",
+                  "description": "Ensure the download feature works correctly.",
+                  "priority": "Medium",
+                  "parent_story": "STORY-6"
+                }
+              ],
+              "parent_epic": "EPIC-2"
+            }
+          ],
+          "parent_initiative": "INIT-1"
+        },
+        {
+          "local_id": "EPIC-3",
+          "summary": "Implement user-friendly interface",
+          "description": "Create an intuitive UI for the resume builder app.",
+          "priority": "Medium",
+          "stories": [
+            {
+              "local_id": "STORY-7",
+              "summary": "Design main user interface",
+              "description": "Create a user-friendly main interface for the app.",
+              "story_points": 5,
+              "priority": "Medium",
+              "acceptance_criteria": [
+                "UI is intuitive and easy to navigate.",
+                "Instructions for use are clear."
+              ],
+              "tasks": [
+                {
+                  "local_id": "TASK-13",
+                  "summary": "Create wireframes for UI",
+                  "description": "Design wireframes for the main interface.",
+                  "priority": "Medium",
+                  "parent_story": "STORY-7"
+                },
+                {
+                  "local_id": "TASK-14",
+                  "summary": "Implement UI design",
+                  "description": "Develop the main interface based on wireframes.",
+                  "priority": "Medium",
+                  "parent_story": "STORY-7"
+                }
+              ],
+              "parent_epic": "EPIC-3"
+            }
+          ],
+          "parent_initiative": "INIT-1"
+        }
+      ]
+    }
+  ]
+}
