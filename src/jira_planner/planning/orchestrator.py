@@ -1,16 +1,12 @@
-"""
-Walk a Plan top–down and create every Jira ticket, wiring links as we go.
-"""
-
 from __future__ import annotations
 from typing import Dict
 
-from epic_creator.planning.models import Plan
-from epic_creator.services.epic_handler import EpicCreationHandler
-from epic_creator.services.story_handler import StoryCreationHandler
-from epic_creator.services.task_handler import TaskCreationHandler
-from epic_creator.services.field_meta import FieldMetadataService
-from epic_creator.services.jiraClient import JiraClient
+from .models import Plan
+from ..services.epic_handler import EpicCreationHandler
+from ..services.story_handler import StoryCreationHandler
+from ..services.task_handler import TaskCreationHandler
+from ..services.field_meta import FieldMetadataService
+from ..services.jira_client import JiraClient
 
 
 class TicketOrchestrator:
@@ -79,8 +75,6 @@ class TicketOrchestrator:
     # ------------------------------------------------------------------ #
     def _create_epic(self, epic, account_id, project_key, fields):
         # 1. Map friendly AI keys ➜ real Jira field IDs
-        # allowed_epic_fields = self.field_service.get_allowed_field_map(self.project_key, "Epic")
-        # print(epic)
         mapped_fields = self.epic_handler.map_fields(
             epic_json   = epic.dict(),
             allowed_map = fields,
@@ -93,7 +87,6 @@ class TicketOrchestrator:
 
 
     def _create_story(self, story, epic_key: str, account_id, project_key, fields):
-        # print(epic_key)
         mapped = self.story_handler.map_fields(
             story_json   = story.dict(),
             allowed_map  = fields,   # cache once per project
@@ -105,7 +98,6 @@ class TicketOrchestrator:
         return self.story_handler.create_story(project_key, mapped)
 
     def _create_task(self, task, story_key: str, account_id, project_key, fields):
-        # print(task)
         mapped = self.task_handler.map_fields(
             task_json   = task.dict(),
             allowed_map = fields,

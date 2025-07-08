@@ -1,6 +1,5 @@
-# convert_plan_to_json.py
 import json, pathlib
-from epic_creator.planning.models import Plan, Initiative, Epic, Story, Task
+from ..planning.models import Plan, Initiative, Epic, Story, Task
 
 plan_repr = pathlib.Path("/Users/abhinavsingh/projects/JIRA-agent/src/epic_creator/output.txt").read_text()
 
@@ -13,4 +12,4 @@ plan_obj = eval(f"Plan({plan_repr})",
 pathlib.Path("plan.json").write_text(
     json.dumps(plan_obj.model_dump(), indent=2)
 )
-print("✅  Saved plan.json")
+print("Saved plan.json")

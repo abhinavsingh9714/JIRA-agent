@@ -1,17 +1,3 @@
-"""
-Epic‑Creator • planning.llm
----------------------------------
-Generate a structured *Plan* object (Initiatives ▸ Epics ▸ Stories ▸ Tasks)
-from a free‑form feature prompt and an optional Style Guide / Fields Guide.
-
-Key differences vs. the previous version:
-1.  Uses **ChatOpenAI.with_structured_output(Plan)** — the Plan JSON schema is
-    sent as a function‑call tool outside the prompt, so **zero schema tokens**
-    hit the context window.
-2.  No explicit JsonOutputParser / OutputFixingParser boilerplate — parsing &
-    validation are handled automatically by LangChain.
-3.  Keeps the prompt concise and focused on high‑value context only.
-"""
 from __future__ import annotations
 
 from typing import Optional
@@ -19,7 +5,7 @@ from typing import Optional
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 
-from epic_creator.planning.models import Plan
+from .models import Plan
 
 # ──────────────────────────────────────────────────────────────────────────────
 # 1.  LLM wrapper

@@ -1,15 +1,8 @@
-"""
-epic_creator.planning.project_context
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Light-weight metadata snapshot of *all* Epics + Stories in a Jira project.
-The payload is intentionally small (only a few core fields) so we can feed
-it to ProjectStyleAnalyzer and, ultimately, to PlanningLLMService.
-"""
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
-from epic_creator.services.jiraClient import JiraClient
+from ..services.jira_client import JiraClient
 
 
 __all__ = ["ProjectSnapshotService"]

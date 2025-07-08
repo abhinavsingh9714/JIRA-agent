@@ -1,8 +1,6 @@
-###############################################################################
-# 1. Field Metadata Retrieval Service                                         #
-###############################################################################
 from typing import Any, Dict, List
-from .jiraClient import JiraClient
+from .jira_client import JiraClient
+
 class FieldMetadataService:
     def __init__(self, jira_client: JiraClient):
         self.jira_client = jira_client

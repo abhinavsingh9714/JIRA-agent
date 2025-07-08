@@ -1,8 +1,5 @@
-###############################################################################
-# 6. Dynamic JIRA Task / Sub-task Creation Handler                            #
-###############################################################################
 from typing import Dict, Any
-from .jiraClient import JiraClient
+from .jira_client import JiraClient
 
 
 class TaskCreationHandler:

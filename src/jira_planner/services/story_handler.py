@@ -1,8 +1,5 @@
-###############################################################################
-# 5. Dynamic JIRA Story Creation Handler                                      #
-###############################################################################
 from typing import Dict, Any
-from .jiraClient import JiraClient
+from .jira_client import JiraClient
 
 
 class StoryCreationHandler:

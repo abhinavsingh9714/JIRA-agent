@@ -1,12 +1,10 @@
 import json
-from epic_creator.planning.orchestrator import TicketOrchestrator
-from epic_creator.planning.project_context import ProjectSnapshotService
-from epic_creator.planning.style_analyser import ProjectStyleAnalyzer
-from epic_creator.services.context import FeatureContextService
-from epic_creator.services.field_meta import FieldMetadataService
-from epic_creator.services.jiraClient import JiraClient
-from epic_creator.services.llm import PlanningLLMService
-from epic_creator.planning.models import Plan
+from .project_context import ProjectSnapshotService
+from .style_analyser import ProjectStyleAnalyzer
+from ..services.field_meta import FieldMetadataService
+from ..services.jira_client import JiraClient
+from .llm import PlanningLLMService
+from .models import Plan
 from pathlib import Path
 
 class AIPlanner:
@@ -21,9 +19,9 @@ class AIPlanner:
             self.example_project_key = None
         # 1. Metadata
         self.field_service = FieldMetadataService(self.jira)
-        self.context_service = FeatureContextService(self.jira)
+        # self.context_service = FeatureContextService(self.jira)
         self.llm_service   = PlanningLLMService()
-        self.tktOrchestrator = TicketOrchestrator(self.jira)
+        # self.tktOrchestrator = TicketOrchestrator(self.jira)
 
     def plan(self, task_description):
         """
@@ -58,9 +56,9 @@ class AIPlanner:
         # print(llm_plan)
         # llm_plan_json = Path("/Users/abhinavsingh/projects/JIRA-agent/plan.json").read_text()
         # llm_plan = json.loads(llm_plan_json)
-        plan = Plan.model_validate(llm_plan)
-        plan = self.tktOrchestrator.create_plan(plan, account_id, self.project_key)
-        return plan
+        # plan = Plan.model_validate(llm_plan)
+        # plan = self.tktOrchestrator.create_plan(plan, account_id, self.project_key)
+        return llm_plan
 
 if __name__ == "__main__":
     planner = AIPlanner(project_key="JIRADEMO", example_project_key="JIRADEMO")

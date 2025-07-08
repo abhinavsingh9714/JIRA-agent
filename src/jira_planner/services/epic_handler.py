@@ -1,9 +1,5 @@
-###############################################################################
-# 4. Dynamic JIRA Epic Creation Handler                                       #
-###############################################################################
 from typing import List, Dict, Any
-from .jiraClient import JiraClient
-from .field_meta import FieldMetadataService
+from .jira_client import JiraClient
 
 class EpicCreationHandler:
     def __init__(self, jira_client: JiraClient):#, field_service: FieldMetadataService):

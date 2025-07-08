@@ -1,14 +1,3 @@
-"""
-epic_creator.planning.models
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Typed representation of a product-plan hierarchy that will be:
-1.  Returned by PlanningLLMService
-2.  Shown / edited in the Streamlit UI
-3.  Walked by TicketOrchestrator to create Jira issues
-
-All objects carry a `local_id` (e.g. "EPIC-1", "STORY-2") so we can
-link children → parents *before* real Jira keys are known.
-"""
 from __future__ import annotations
 
 from typing import List, Optional
